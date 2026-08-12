@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buscador de Leads</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Buscador de Leads</h1>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="buscar">Buscar leads</button>
+      <button class="tab-btn" data-tab="leads">Leads</button>
+      <button class="tab-btn" data-tab="funil">Funil</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ABA BUSCAR -->
+    <section id="tab-buscar" class="tab-panel active">
+      <form id="search-form" class="search-form">
+        <div class="field">
+          <label for="niche">Nicho</label>
+          <input id="niche" name="niche" type="text" placeholder="ex: dentista" required />
+        </div>
+        <div class="field">
+          <label for="location">Localidade</label>
+          <input id="location" name="location" type="text" placeholder="ex: Curitiba, PR" required />
+        </div>
+        <div class="field field-small">
+          <label for="quantity">Quantidade</label>
+          <input id="quantity" name="quantity" type="number" min="1" max="120" value="20" />
+        </div>
+        <button type="submit" id="search-submit">Buscar</button>
+      </form>
+
+      <div id="search-progress" class="search-progress hidden">
+        <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+        <p id="progress-text">Iniciando busca...</p>
+      </div>
+
+      <p class="hint">
+        Uma janela do navegador vai abrir para navegar pelo Google Maps de verdade — isso é
+        esperado e ajuda a evitar bloqueios. Não feche essa janela até a busca terminar.
+        Apenas uma busca é processada por vez.
+      </p>
+    </section>
+
+    <!-- ABA LEADS -->
+    <section id="tab-leads" class="tab-panel">
+      <div class="toolbar">
+        <div class="site-toggle">
+          <button class="toggle-btn active" data-site="all">Todos</button>
+          <button class="toggle-btn" data-site="com">Com site</button>
+          <button class="toggle-btn" data-site="sem">Sem site</button>
+        </div>
+
+        <input id="filter-q" type="text" placeholder="Buscar por nome, endereço ou categoria..." />
+
+        <select id="filter-qualification">
+          <option value="">Qualificação (todas)</option>
+          <option value="nao_avaliado">Não avaliado</option>
+          <option value="qualificado">Qualificado</option>
+          <option value="descartado">Descartado</option>
+        </select>
+
+        <select id="filter-status">
+          <option value="">Status (todos)</option>
+          <option value="nao_contatado">Não contatado</option>
+          <option value="contatado">Contatado</option>
+          <option value="sem_resposta">Sem resposta</option>
+          <option value="em_negociacao">Em negociação</option>
+          <option value="fechado">Fechado</option>
+          <option value="perdido">Perdido</option>
+        </select>
+
+        <select id="filter-niche">
+          <option value="">Nicho (todos)</option>
+        </select>
+
+        <button id="refresh-leads">Atualizar</button>
+        <a id="export-csv" href="#">Exportar CSV</a>
+        <a id="export-backup" href="/api/leads/backup">Exportar backup</a>
+        <button id="import-backup-btn" type="button">Importar backup</button>
+        <input id="import-backup-input" type="file" accept="application/json" class="hidden" />
+      </div>
+
+      <p id="import-status" class="hint hidden"></p>
+
+      <p class="hint">
+        Use "Exportar backup" pra baixar todos os seus leads (com qualificação, status e notas)
+        num arquivo. Leve esse arquivo pra outro dispositivo e use "Importar backup" lá — os leads
+        que já existirem são atualizados, e os novos são adicionados, sem duplicar nada.
+      </p>
+
+      <div class="table-wrap">
+        <table id="leads-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Categoria</th>
+              <th>Contato</th>
+              <th>Site / Redes</th>
+              <th>Avaliação</th>
+              <th>Qualificação</th>
+              <th>Status</th>
+              <th>Notas</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="leads-tbody"></tbody>
+        </table>
+        <p id="leads-empty" class="hint hidden">Nenhum lead encontrado com esses filtros.</p>
+      </div>
+    </section>
+
+    <!-- ABA FUNIL -->
+    <section id="tab-funil" class="tab-panel">
+      <div id="kanban" class="kanban"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
