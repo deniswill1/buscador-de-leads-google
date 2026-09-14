@@ -201,14 +201,15 @@ router.post('/import', (req, res) => {
 router.get('/niches', (req, res) => {
   const rows = db
     .prepare(
-      `SELECT DISTINCT searches.niche AS niche
+      `SELECT searches.niche AS niche, COUNT(*) AS count
        FROM leads
        JOIN searches ON leads.search_id = searches.id
        WHERE searches.niche IS NOT NULL
+       GROUP BY searches.niche
        ORDER BY searches.niche COLLATE NOCASE`
     )
     .all();
-  res.json(rows.map((r) => r.niche));
+  res.json(rows);
 });
 
 router.get('/', (req, res) => {

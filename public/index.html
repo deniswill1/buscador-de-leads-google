@@ -4,16 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Buscador de Leads</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="topbar">
-    <h1>Buscador de Leads</h1>
+    <div class="brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M11 7a4 4 0 0 1 4 4"/><path d="m21 21-4.3-4.3"/></svg>
+      </span>
+      <h1>Buscador de Leads</h1>
+    </div>
     <nav class="tabs">
-      <button class="tab-btn active" data-tab="buscar">Buscar leads</button>
-      <button class="tab-btn" data-tab="leads">Leads</button>
-      <button class="tab-btn" data-tab="funil">Funil</button>
+      <button class="tab-btn active" data-tab="buscar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        Buscar leads
+      </button>
+      <button class="tab-btn" data-tab="leads">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>
+        Leads
+      </button>
+      <button class="tab-btn" data-tab="funil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16l-6 8v6l-4 2v-8L4 4Z"/></svg>
+        Funil
+      </button>
     </nav>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Alternar tema claro/escuro" title="Alternar tema claro/escuro"></button>
   </header>
 
   <main>
@@ -32,7 +50,10 @@
           <label for="quantity">Quantidade</label>
           <input id="quantity" name="quantity" type="number" min="1" max="120" value="20" />
         </div>
-        <button type="submit" id="search-submit">Buscar</button>
+        <button type="submit" id="search-submit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          Buscar
+        </button>
       </form>
 
       <div id="search-progress" class="search-progress hidden">
@@ -49,6 +70,19 @@
 
     <!-- ABA LEADS -->
     <section id="tab-leads" class="tab-panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Base de prospecção</p>
+          <h2>Seus leads</h2>
+        </div>
+        <div id="leads-summary" class="summary-line"></div>
+      </div>
+
+      <div class="niche-pills-wrap">
+        <span class="niche-pills-label">Nicho</span>
+        <div id="leads-niche-pills" class="niche-pills"></div>
+      </div>
+
       <div class="toolbar">
         <div class="site-toggle">
           <button class="toggle-btn active" data-site="all">Todos</button>
@@ -75,14 +109,22 @@
           <option value="perdido">Perdido</option>
         </select>
 
-        <select id="filter-niche">
-          <option value="">Nicho (todos)</option>
-        </select>
-
-        <button id="refresh-leads">Atualizar</button>
-        <a id="export-csv" href="#">Exportar CSV</a>
-        <a id="export-backup" href="/api/leads/backup">Exportar backup</a>
-        <button id="import-backup-btn" type="button">Importar backup</button>
+        <button id="refresh-leads">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.36"/><path d="M21 4v5h-5"/></svg>
+          Atualizar
+        </button>
+        <a id="export-csv" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Exportar CSV
+        </a>
+        <a id="export-backup" href="/api/leads/backup">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Exportar backup
+        </a>
+        <button id="import-backup-btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9"/><path d="m7 14 5-5 5 5"/><path d="M5 3h14"/></svg>
+          Importar backup
+        </button>
         <input id="import-backup-input" type="file" accept="application/json" class="hidden" />
       </div>
 
@@ -94,32 +136,45 @@
         que já existirem são atualizados, e os novos são adicionados, sem duplicar nada.
       </p>
 
-      <div class="table-wrap">
-        <table id="leads-table">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Categoria</th>
-              <th>Contato</th>
-              <th>Site / Redes</th>
-              <th>Avaliação</th>
-              <th>Qualificação</th>
-              <th>Status</th>
-              <th>Notas</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="leads-tbody"></tbody>
-        </table>
-        <p id="leads-empty" class="hint hidden">Nenhum lead encontrado com esses filtros.</p>
-      </div>
+      <div id="leads-tbody" class="leads-grid"></div>
+      <p id="leads-empty" class="hint hidden">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        Nenhum lead encontrado com esses filtros.
+      </p>
     </section>
 
     <!-- ABA FUNIL -->
     <section id="tab-funil" class="tab-panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Acompanhamento comercial</p>
+          <h2>Funil de contato</h2>
+        </div>
+        <div id="funnel-summary" class="summary-line"></div>
+      </div>
+
+      <div class="niche-pills-wrap">
+        <span class="niche-pills-label">Nicho</span>
+        <div id="funil-niche-pills" class="niche-pills"></div>
+      </div>
+
+      <div class="funil-toolbar">
+        <button type="button" id="funil-instagram-filter" class="filter-toggle" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg>
+          Apenas com Instagram
+        </button>
+      </div>
+
+      <p class="hint">Arraste os cards entre as colunas para mudar o status, ou use o menu de cada card.</p>
+
       <div id="kanban" class="kanban"></div>
     </section>
   </main>
+
+  <div id="lead-drawer-backdrop" class="drawer-backdrop"></div>
+  <aside id="lead-drawer" class="lead-drawer" aria-hidden="true">
+    <div id="lead-drawer-content"></div>
+  </aside>
 
   <script src="app.js"></script>
 </body>
