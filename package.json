@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node server/index.js",
     "postinstall": "playwright install chromium",
-    "test": "node --test server/scraper/enrichSite.test.js"
+    "test": "node --test server/scraper/enrichSite.test.js",
+    "db:checkpoint": "node -e \"const db = require('./server/db'); db.exec('PRAGMA wal_checkpoint(TRUNCATE)'); console.log('Checkpoint feito — data/leads.db está com todos os dados mais recentes.');\""
   },
   "engines": {
     "node": ">=22.5.0"
