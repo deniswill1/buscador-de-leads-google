@@ -2,7 +2,7 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 
-require('./db'); // garante que o banco e as tabelas existam antes de subir o servidor
+require('./supabaseClient'); // falha rápido se SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY não estiverem configurados
 
 const searchRoutes = require('./routes/search');
 const leadsRoutes = require('./routes/leads');

@@ -1,4 +1,4 @@
-const db = require('../db');
+const supabase = require('../supabaseClient');
 const { searchLeads } = require('../scraper/mapsScraper');
 const { enrichSite } = require('../scraper/enrichSite');
 
@@ -30,74 +30,60 @@ function classifyWebsite(url) {
   return { website: url, social: {} };
 }
 
-const upsertLeadStmt = db.prepare(`
-  INSERT INTO leads (
-    search_id, name, category, address, phone, website, has_website, email,
-    instagram, facebook, linkedin, whatsapp, tiktok, rating, reviews_count, maps_url
-  ) VALUES (
-    @search_id, @name, @category, @address, @phone, @website, @has_website, @email,
-    @instagram, @facebook, @linkedin, @whatsapp, @tiktok, @rating, @reviews_count, @maps_url
-  )
-  ON CONFLICT(maps_url) DO UPDATE SET
-    search_id = excluded.search_id,
-    name = excluded.name,
-    category = excluded.category,
-    address = excluded.address,
-    phone = excluded.phone,
-    website = excluded.website,
-    has_website = excluded.has_website,
-    email = excluded.email,
-    instagram = excluded.instagram,
-    facebook = excluded.facebook,
-    linkedin = excluded.linkedin,
-    whatsapp = excluded.whatsapp,
-    tiktok = excluded.tiktok,
-    rating = excluded.rating,
-    reviews_count = excluded.reviews_count,
-    updated_at = datetime('now')
-`);
+async function insertLead(searchId, lead) {
+  const { error } = await supabase
+    .from('leads')
+    .upsert(
+      {
+        search_id: searchId,
+        name: lead.name,
+        category: lead.category || null,
+        address: lead.address || null,
+        phone: lead.phone || null,
+        website: lead.website || null,
+        has_website: !!lead.website,
+        email: lead.email || null,
+        instagram: lead.instagram || null,
+        facebook: lead.facebook || null,
+        linkedin: lead.linkedin || null,
+        whatsapp: lead.whatsapp || null,
+        tiktok: lead.tiktok || null,
+        rating: lead.rating ?? null,
+        reviews_count: lead.reviewsCount ?? null,
+        maps_url: lead.mapsUrl,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'maps_url' }
+    );
 
-const updateProgressStmt = db.prepare(`UPDATE searches SET processed = ? WHERE id = ?`);
-const updateStatusStmt = db.prepare(`UPDATE searches SET status = ?, processed = ?, error = ? WHERE id = ?`);
-
-function insertLead(searchId, lead) {
-  try {
-    upsertLeadStmt.run({
-      search_id: searchId,
-      name: lead.name,
-      category: lead.category || null,
-      address: lead.address || null,
-      phone: lead.phone || null,
-      website: lead.website || null,
-      has_website: lead.website ? 1 : 0,
-      email: lead.email || null,
-      instagram: lead.instagram || null,
-      facebook: lead.facebook || null,
-      linkedin: lead.linkedin || null,
-      whatsapp: lead.whatsapp || null,
-      tiktok: lead.tiktok || null,
-      rating: lead.rating ?? null,
-      reviews_count: lead.reviewsCount ?? null,
-      maps_url: lead.mapsUrl,
-    });
-  } catch (err) {
-    console.error('Erro ao salvar lead:', err.message);
-  }
+  if (error) console.error('Erro ao salvar lead:', error.message);
 }
-
-const getExistingMapsUrlsStmt = db.prepare(`SELECT maps_url FROM leads WHERE maps_url IS NOT NULL`);
 
 async function processSearch(searchId, { niche, location, quantity }) {
   try {
     const headless = process.env.HEADLESS === 'true';
-    const existingUrls = new Set(getExistingMapsUrlsStmt.all().map((row) => row.maps_url));
+    const { data: existingRows, error: existingErr } = await supabase
+      .from('leads')
+      .select('maps_url')
+      .not('maps_url', 'is', null);
+    if (existingErr) throw existingErr;
+    const existingUrls = new Set(existingRows.map((row) => row.maps_url));
+
     const leads = await searchLeads({
       niche,
       location,
       quantity,
       headless,
       existingUrls,
-      onProgress: (done) => updateProgressStmt.run(done, searchId),
+      onProgress: (done) => {
+        supabase
+          .from('searches')
+          .update({ processed: done })
+          .eq('id', searchId)
+          .then(({ error }) => {
+            if (error) console.error('Erro ao atualizar progresso:', error.message);
+          });
+      },
     });
 
     for (const lead of leads) {
@@ -105,12 +91,12 @@ async function processSearch(searchId, { niche, location, quantity }) {
       const enrichment = website
         ? await enrichSite(website)
         : { email: null, instagram: null, facebook: null, linkedin: null, tiktok: null, whatsapp: null };
-      insertLead(searchId, { ...lead, website, ...enrichment, ...social });
+      await insertLead(searchId, { ...lead, website, ...enrichment, ...social });
     }
 
-    updateStatusStmt.run('done', leads.length, null, searchId);
+    await supabase.from('searches').update({ status: 'done', processed: leads.length, error: null }).eq('id', searchId);
   } catch (err) {
-    updateStatusStmt.run('error', 0, err.message, searchId);
+    await supabase.from('searches').update({ status: 'error', processed: 0, error: err.message }).eq('id', searchId);
   }
 }
 

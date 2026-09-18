@@ -8,12 +8,13 @@
     "start": "node server/index.js",
     "postinstall": "playwright install chromium",
     "test": "node --test server/scraper/enrichSite.test.js",
-    "db:checkpoint": "node -e \"const db = require('./server/db'); db.exec('PRAGMA wal_checkpoint(TRUNCATE)'); console.log('Checkpoint feito — data/leads.db está com todos os dados mais recentes.');\""
+    "migrate:supabase": "node scripts/migrate-sqlite-to-supabase.js"
   },
   "engines": {
     "node": ">=22.5.0"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.116.0",
     "cheerio": "^1.0.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
