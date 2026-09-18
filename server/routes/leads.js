@@ -1,7 +1,23 @@
 const express = require('express');
+const path = require('path');
+const { execFile } = require('child_process');
 const db = require('../db');
 
 const router = express.Router();
+const REPO_ROOT = path.join(__dirname, '..', '..');
+const DB_PATH = 'data/leads.db';
+
+function runGit(args) {
+  return new Promise((resolve, reject) => {
+    execFile('git', args, { cwd: REPO_ROOT }, (error, stdout, stderr) => {
+      if (error) {
+        error.stderr = stderr;
+        return reject(error);
+      }
+      resolve(stdout);
+    });
+  });
+}
 
 const ALLOWED_QUALIFICATION = ['nao_avaliado', 'qualificado', 'descartado'];
 const ALLOWED_STATUS = ['nao_contatado', 'potencial', 'contatado', 'sem_resposta', 'em_negociacao', 'fechado', 'perdido'];
@@ -196,6 +212,30 @@ router.post('/import', (req, res) => {
   }
 
   res.json({ total: leads.length, inserted, updated, skipped });
+});
+
+// Faz o checkpoint do WAL pro data/leads.db ficar com os dados mais recentes e
+// commita esse arquivo no Git, pra evitar que buscas novas se percam quando o
+// arquivo é sobrescrito por um checkout/pull/reset (ver histórico do repo).
+router.post('/save-git', async (req, res) => {
+  try {
+    db.exec('PRAGMA wal_checkpoint(TRUNCATE)');
+
+    await runGit(['add', DB_PATH]);
+    const staged = await runGit(['status', '--porcelain', '--', DB_PATH]);
+    if (!staged.trim()) {
+      return res.json({ committed: false, message: 'Nenhuma alteração nova no banco desde o último commit.' });
+    }
+
+    const count = db.prepare('SELECT COUNT(*) AS c FROM leads').get().c;
+    const message = `Atualiza banco de leads (${count} leads) - ${new Date().toISOString().slice(0, 10)}`;
+    await runGit(['commit', '-m', message]);
+    const hash = (await runGit(['rev-parse', '--short', 'HEAD'])).trim();
+
+    res.json({ committed: true, message, hash, count });
+  } catch (err) {
+    res.status(500).json({ error: 'Falha ao commitar: ' + (err.stderr || err.message) });
+  }
 });
 
 router.get('/niches', (req, res) => {

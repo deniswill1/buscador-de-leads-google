@@ -591,6 +591,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const saveGitBtn = document.getElementById('save-git-btn');
+  saveGitBtn.addEventListener('click', async () => {
+    const originalHTML = saveGitBtn.innerHTML;
+    saveGitBtn.disabled = true;
+    saveGitBtn.textContent = 'Salvando...';
+    try {
+      const res = await fetch('/api/leads/save-git', { method: 'POST' });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Falha ao salvar no Git');
+      showImportStatus(
+        result.committed
+          ? `Commit feito: "${result.message}" (${result.hash}).`
+          : result.message,
+        false
+      );
+    } catch (err) {
+      showImportStatus(`Erro ao salvar no Git: ${err.message}`, true);
+    } finally {
+      saveGitBtn.disabled = false;
+      saveGitBtn.innerHTML = originalHTML;
+    }
+  });
+
   const tbody = document.getElementById('leads-tbody');
   tbody.addEventListener('change', async (e) => {
     const field = e.target.dataset.field;
