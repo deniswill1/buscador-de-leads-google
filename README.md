@@ -60,7 +60,7 @@ Variáveis de ambiente (opcional, copie `.env.example` para `.env`):
    nicho pesquisado, qualificação e status, busca por texto, e edição inline de qualificação,
    status do funil e notas. Links diretos para ligar (`tel:`), mandar email (`mailto:`), abrir o
    site e as redes sociais/WhatsApp encontrados.
-3. **Funil**: visão em colunas (Não contatado → Contatado → Sem resposta → Em negociação →
+3. **Funil**: visão em colunas (Não contatado → Potencial → Contatado → Sem resposta → Em negociação →
    Fechado / Perdido) para acompanhar onde cada lead está no processo comercial.
 4. **Exportar CSV**: respeita os filtros ativos na tela de Leads — pra abrir em Excel/Planilhas.
 5. **Exportar/Importar backup**: "Exportar backup" baixa um arquivo `.json` com todos os leads

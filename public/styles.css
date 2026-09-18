@@ -18,6 +18,8 @@
   /* semantic status colors — separate hue family from the accent */
   --neutral-status: #6b7280;
   --neutral-status-soft: #eef0f3;
+  --potential-status: #b8298f;
+  --potential-status-soft: #f8e4f1;
   --info-status: #1c7fae;
   --info-status-soft: #e5f2f9;
   --warning-status: #b9791a;
@@ -59,6 +61,8 @@
 
     --neutral-status: #93a0b3;
     --neutral-status-soft: #232838;
+    --potential-status: #e069bd;
+    --potential-status-soft: #352030;
     --info-status: #59b6e0;
     --info-status-soft: #142a36;
     --warning-status: #e0a83f;
@@ -92,6 +96,8 @@
 
   --neutral-status: #93a0b3;
   --neutral-status-soft: #232838;
+  --potential-status: #e069bd;
+  --potential-status-soft: #352030;
   --info-status: #59b6e0;
   --info-status-soft: #142a36;
   --warning-status: #e0a83f;

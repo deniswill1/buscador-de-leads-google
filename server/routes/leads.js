@@ -4,7 +4,7 @@ const db = require('../db');
 const router = express.Router();
 
 const ALLOWED_QUALIFICATION = ['nao_avaliado', 'qualificado', 'descartado'];
-const ALLOWED_STATUS = ['nao_contatado', 'contatado', 'sem_resposta', 'em_negociacao', 'fechado', 'perdido'];
+const ALLOWED_STATUS = ['nao_contatado', 'potencial', 'contatado', 'sem_resposta', 'em_negociacao', 'fechado', 'perdido'];
 
 const LEADS_WITH_NICHE_SELECT = `
   SELECT leads.*, searches.niche AS niche, searches.location AS location

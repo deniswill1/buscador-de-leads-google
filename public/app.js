@@ -4,9 +4,10 @@ const QUALIFICATION_LABELS = {
   descartado: 'Descartado',
 };
 
-const STATUS_ORDER = ['nao_contatado', 'contatado', 'sem_resposta', 'em_negociacao', 'fechado', 'perdido'];
+const STATUS_ORDER = ['nao_contatado', 'potencial', 'contatado', 'sem_resposta', 'em_negociacao', 'fechado', 'perdido'];
 const STATUS_LABELS = {
   nao_contatado: 'Não contatado',
+  potencial: 'Potencial',
   contatado: 'Contatado',
   sem_resposta: 'Sem resposta',
   em_negociacao: 'Em negociação',
@@ -49,6 +50,7 @@ function nicheColor(niche) {
 // tanto no select da tabela quanto no card do kanban.
 const STATUS_COLOR_VARS = {
   nao_contatado: ['--neutral-status', '--neutral-status-soft'],
+  potencial: ['--potential-status', '--potential-status-soft'],
   contatado: ['--info-status', '--info-status-soft'],
   sem_resposta: ['--warning-status', '--warning-status-soft'],
   em_negociacao: ['--progress-status', '--progress-status-soft'],
