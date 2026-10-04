@@ -6,6 +6,7 @@ require('./supabaseClient'); // falha rápido se SUPABASE_URL/SUPABASE_SERVICE_R
 
 const searchRoutes = require('./routes/search');
 const leadsRoutes = require('./routes/leads');
+const { crmCors } = require('./crmAccess');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,7 +14,9 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json({ limit: '10mb' })); // backups grandes de leads podem passar do limite padrão (100kb)
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-app.use('/api/search', searchRoutes);
+// O CRM confere se o buscador está ligado antes de mandar a busca.
+app.get('/api/health', crmCors, (req, res) => res.json({ ok: true }));
+app.use('/api/search', crmCors, searchRoutes);
 app.use('/api/leads', leadsRoutes);
 
 app.listen(PORT, () => {
