@@ -15,7 +15,9 @@ app.use(express.json({ limit: '10mb' })); // backups grandes de leads podem pass
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // O CRM confere se o buscador está ligado antes de mandar a busca.
-app.get('/api/health', crmCors, (req, res) => res.json({ ok: true }));
+// app.use (e não app.get) para o preflight de CORS (OPTIONS) também passar pelo crmCors.
+app.use('/api/health', crmCors);
+app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/search', crmCors, searchRoutes);
 app.use('/api/leads', leadsRoutes);
 
